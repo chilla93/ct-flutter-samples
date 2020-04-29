@@ -44,9 +44,9 @@ class HomePage extends StatelessWidget {
               listData: this.pageData.map((i) => i.title).toList()
             ),
           ),
-          // IgnorePointer(
-          //   child: BlurComponent(controller: _pageViewController)
-          // ),
+          IgnorePointer(
+            child: BlurComponent(controller: _pageViewController)
+          ),
           // BlurComponent(controller: _pageViewController),
           Align(
             alignment: Alignment.bottomCenter,

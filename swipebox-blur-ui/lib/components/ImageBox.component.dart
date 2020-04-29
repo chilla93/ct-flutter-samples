@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:ct_swipebox/curves/customEaseOut.curves.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -36,8 +37,8 @@ class ImageBoxComponent extends StatelessWidget {
 class ImageBoxTransitionComponent extends StatefulWidget {
   ImageBoxTransitionComponent({Key key, @required this.imageList, @required this.controller}) 
   :
-  this._opacityTween = Tween(begin: 0.4, end: 1),
-  this._reverseOpacityTween = Tween(begin: 1, end: 0.4),
+  this._opacityTween = Tween(begin: 0, end: 1),
+  this._reverseOpacityTween = Tween(begin: 1, end: 0),
   this.imageListCount = imageList.length,
   super(key: key);
 
@@ -142,9 +143,14 @@ class _ImageBoxTransitionComponentState extends State<ImageBoxTransitionComponen
   
   @override
   Widget build(BuildContext context) {
-    // final curve = CurveTween(curve: Curves.slowMiddle);
-    final curve = CurveTween(curve: Curves.slowMiddle);
+    final curve = CurveTween(curve: const CustomEaseOutCurve()).chain(CurveTween(curve: Curves.slowMiddle));
+    final curveFlipped = CurveTween(curve: (const CustomEaseOutCurve()).flipped).chain(CurveTween(curve: Curves.slowMiddle.flipped));
+
+    //trying out my custom ease out curve in order to increase the y axis value at the middle of the curve
+    // final curve = CurveTween(curve: const CustomEaseOutCurve()).chain(CurveTween(curve: Curves.slowMiddle));
+
     return Container(
+      color: Colors.black,
       child: Stack(
         children: [
           AnimatedBuilder(
@@ -152,7 +158,7 @@ class _ImageBoxTransitionComponentState extends State<ImageBoxTransitionComponen
             child: _image(widget.imageList[_nextPage]),
             builder: (BuildContext context, Widget child) {
                 return FadeTransition(
-                  opacity: animationController.drive(widget._opacityTween.chain(curve)),
+                  opacity: animationController.drive(curve.chain(widget._opacityTween)),
                   child: child
                 );
             },
@@ -162,7 +168,7 @@ class _ImageBoxTransitionComponentState extends State<ImageBoxTransitionComponen
             child: _image(widget.imageList[_currentPage]),
             builder: (BuildContext context, Widget child) {
                 return FadeTransition(
-                  opacity: animationController.drive(widget._reverseOpacityTween.chain(curve)),
+                  opacity: animationController.drive(curveFlipped.chain(widget._reverseOpacityTween)),
                   child: child
                 );
             },
